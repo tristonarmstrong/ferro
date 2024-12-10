@@ -1,26 +1,28 @@
-use git2::Repository;
-use std::{env::current_dir, path::PathBuf};
+use std::{fs::write, io::Write, process::Command, str::from_utf8};
 
-pub struct GitGrabber {
-    pub repo: Option<Repository>,
-    dir: PathBuf,
-}
+// this is a comment test here
+pub struct GitGrabber {}
 
 impl GitGrabber {
     pub fn new() -> Self {
-        println!("{:?}", current_dir().unwrap());
-        GitGrabber {
-            repo: None,
-            dir: current_dir().unwrap(),
-        }
+        GitGrabber {}
     }
 
-    pub fn get_repo(&mut self) {
-        let repo = match Repository::open(self.dir.clone()) {
-            Ok(repo) => repo,
-            Err(e) => panic!("Failed to open: {}", e),
-        };
+    pub fn get_diff(&self) -> String {
+        // just to print
+        let staged_files_output = Command::new("git")
+            .args(["diff", "--staged", "--stat"])
+            .output()
+            .expect("Failed to get diff");
+        let _ = std::io::stdout().write_all(&staged_files_output.stdout);
 
-        self.repo = Some(repo);
+        // actual output
+        let output = Command::new("git")
+            .args(["diff", "--staged", "--", ".", "':(exclude)*lock*'"])
+            .output()
+            .expect("Failed to execute process");
+
+        let b = from_utf8(&output.stdout).unwrap();
+        String::from(b)
     }
 }
