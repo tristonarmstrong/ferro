@@ -8,6 +8,7 @@ pub struct GitGrabber {
 
 impl GitGrabber {
     pub fn new() -> Self {
+        println!("{:?}", current_dir().unwrap());
         GitGrabber {
             repo: None,
             dir: current_dir().unwrap(),

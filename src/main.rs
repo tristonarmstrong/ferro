@@ -13,15 +13,12 @@ fn main() {
 
     let mut gg = GitGrabber::new();
     gg.get_repo();
-
-    gg.repo.unwrap().revwalk().unwrap().for_each(|x| {
-        if x.is_ok() {
-            println!("{:?}", x.unwrap())
-        } else {
-            println!("No rev")
-        }
-    });
-
+    gg.repo
+        .unwrap()
+        .reflog("head")
+        .unwrap()
+        .iter()
+        .for_each(|x| println!("{:?}", x.message()));
     return ();
 
     // let res_text = transporter.make_request(a).unwrap().text().unwrap();
