@@ -13,25 +13,28 @@ impl GitGrabber {
         GitGrabber {}
     }
 
-    pub fn get_diff(&self) -> String {
-        // just to print
-        let staged_files_output = Command::new("git")
-            .args(["diff", "--staged", "--stat"])
+    pub fn get_current_branch() -> String {
+        let branch = Command::new("git")
+            .args(["branch", "--show-current"])
             .output()
-            .expect("Failed to get diff");
-        let _ = std::io::stdout().write_all(&staged_files_output.stdout);
+            .expect("Failed to get branch");
 
-        // actual output
-        let output = Command::new("git")
-            .args(["diff", "--staged", "--", ".", "':(exclude)*lock*'"])
-            .output()
-            .expect("Failed to execute process");
-
-        let b = from_utf8(&output.stdout).unwrap();
+        let b = from_utf8(&branch.stdout).unwrap();
         String::from(b)
     }
 
-    pub fn generate_repo_desc(&self, origin_branch: &str, local_branch: &str) -> String {
+    pub fn get_diff() -> String {
+        // just to print
+        let staged_files_output = Command::new("git")
+            .args(["diff", "--staged"])
+            .output()
+            .expect("Failed to get diff");
+
+        let b = from_utf8(&staged_files_output.stdout).unwrap();
+        String::from(b)
+    }
+
+    pub fn generate_repo_desc(origin_branch: &str, local_branch: &str) -> String {
         let output = Command::new("git")
             .args([
                 "rev-list",
