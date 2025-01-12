@@ -50,18 +50,10 @@ impl GitGrabber {
         String::from(b)
     }
 
-    pub fn generate_repo_desc(origin_branch: &str, local_branch: &str) -> String {
+    pub fn generate_repo_desc() -> String {
+        let curr_branch = GitGrabber::get_current_branch();
         let output = Command::new("git")
-            .args([
-                "rev-list",
-                "--left-right",
-                "--pretty=oneline",
-                &format!(
-                    "{}...{}",
-                    origin_branch.to_string(),
-                    local_branch.to_string()
-                ),
-            ])
+            .args(["reflog", "show", &curr_branch])
             .output()
             .expect("Failed to get repo details");
 
