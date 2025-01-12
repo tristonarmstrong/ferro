@@ -20,13 +20,24 @@ impl GitGrabber {
             .expect("Failed to get branch");
 
         let b = from_utf8(&branch.stdout).unwrap();
-        String::from(b)
+        String::from(b.strip_suffix("\n").unwrap())
     }
 
     pub fn get_diff() -> String {
         // just to print
-        let staged_files_output = Command::new("git")
-            .args(["diff", "--staged"])
+        let output = Command::new("git")
+            .args([
+                "diff",
+                "--staged",
+                "--ignore-all-space",
+                "--ignore-blank-lines",
+                "--ignore-cr-at-eol",
+                "--minimal",
+                "--no-prefix",
+                "--no-renames",
+                "--word-diff",
+                "--inter-hunk-context=0",
+            ])
             .output()
             .expect("Failed to get diff");
 
