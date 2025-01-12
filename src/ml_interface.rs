@@ -1,3 +1,5 @@
+use std::error::Error;
+
 use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 
@@ -48,7 +50,7 @@ impl MlBody {
             prompt: content,
             system: directions,
             options: MlOptions {
-                temperature: 0.5,
+                temperature: 0.1,
                 num_predict: 0,
                 repeat_last_n: 0,
                 top_k: 10,
