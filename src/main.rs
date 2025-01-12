@@ -16,6 +16,7 @@ fn main() {
         None => None,
     };
 
+    // 1+2 = 5
     if prompt.is_none() {
         return;
     }
