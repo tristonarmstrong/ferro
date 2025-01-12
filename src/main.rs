@@ -17,17 +17,17 @@ fn main() {
     };
 
     if prompt.is_none() {
-        println!("Sorry nothing to do.. exiting");
         return;
     }
 
     let mut ml = MlInterface::new();
     let (directions, content) = prompt.unwrap();
-    let mind_gen_text = MlBody::new(content, directions);
-    let res_text = ml.make_request(mind_gen_text).unwrap().text().unwrap();
+    let body = MlBody::new(content, directions);
+    let res_text = ml.make_request(body).unwrap().text().unwrap();
+
     let response: Result<MlResponse, _> = serde_json::from_str(&res_text);
     if response.is_err() {
         panic!("oop something went wrong: {:?}", response.err());
     }
-    println!("{:#?}", response.unwrap());
+    println!("{:?}", response.unwrap().response);
 }
