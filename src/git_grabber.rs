@@ -1,3 +1,4 @@
+use core::panic;
 use std::{
     fs::write,
     io::Write,
@@ -41,7 +42,11 @@ impl GitGrabber {
             .output()
             .expect("Failed to get diff");
 
-        let b = from_utf8(&staged_files_output.stdout).unwrap();
+        if !output.status.success() {
+            panic!("Did you forget to stage your files?");
+        }
+
+        let b = from_utf8(&output.stdout).unwrap();
         String::from(b)
     }
 
