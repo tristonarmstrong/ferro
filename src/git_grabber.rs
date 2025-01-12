@@ -1,19 +1,10 @@
 use core::panic;
-use std::{
-    fs::write,
-    io::Write,
-    process::{Command, Output},
-    str::from_utf8,
-};
+use std::{process::Command, str::from_utf8};
 
 // this is a comment test here
 pub struct GitGrabber {}
 
 impl GitGrabber {
-    pub fn new() -> Self {
-        GitGrabber {}
-    }
-
     pub fn get_current_branch() -> String {
         let branch = Command::new("git")
             .args(["branch", "--show-current"])

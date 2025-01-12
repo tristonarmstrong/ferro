@@ -1,4 +1,3 @@
-use std::error::Error;
 
 use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
