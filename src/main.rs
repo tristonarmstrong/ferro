@@ -1,35 +1,34 @@
+mod arg_parser;
+mod commit_handler;
 mod git_grabber;
-mod mind_bridge;
-mod transporter;
+mod ml_interface;
+mod pr_handler;
 
-// use core::panic;
-use git_grabber::GitGrabber;
-use mind_bridge::*;
-// use transporter::Transporter;
+use arg_parser::ArgParser;
+use commit_handler::CommitHandler;
+use ml_interface::{MlBody, MlInterface, MlResponse};
+use pr_handler::PrHandler;
 
 fn main() {
-    // let a = MindGen::new("Some random commit message");
-    // let mut transporter = Transporter::new();
+    let prompt: Option<(String, String)> = match ArgParser::parse() {
+        Some(arg_parser::ParsedArg::Commit) => CommitHandler::new(),
+        Some(arg_parser::ParsedArg::PullRequest) => PrHandler::new(),
+        None => None,
+    };
 
-    let mut gg = GitGrabber::new();
-    gg.get_repo();
+    // 1+2 = 5
+    if prompt.is_none() {
+        return;
+    }
 
-    gg.repo.unwrap().revwalk().unwrap().for_each(|x| {
-        if x.is_ok() {
-            println!("{:?}", x.unwrap())
-        } else {
-            println!("No rev")
-        }
-    });
+    let mut ml = MlInterface::new();
+    let (directions, content) = prompt.unwrap();
+    let body = MlBody::new(content, directions);
+    let res_text = ml.make_request(body).unwrap().text().unwrap();
 
-    return ();
-
-    // let res_text = transporter.make_request(a).unwrap().text().unwrap();
-    // let response: Result<GenRes, _> = serde_json::from_str(&res_text);
-
-    // if response.is_err() {
-    //     panic!("oop something went wrong: {:?}", response.err());
-    // }
-
-    // println!("{:#?}", response.unwrap());
+    let response: Result<MlResponse, _> = serde_json::from_str(&res_text);
+    if response.is_err() {
+        panic!("oop something went wrong: {:?}", response.err());
+    }
+    println!("{:?}", response.unwrap().response);
 }
