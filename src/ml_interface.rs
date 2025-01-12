@@ -75,11 +75,15 @@ impl MlInterface {
     }
 
     #[allow(unused)]
-    pub fn make_request(
-        &mut self,
-        gen_data: MlBody,
-    ) -> Result<reqwest::blocking::Response, reqwest::Error> {
+    pub fn make_request(&mut self, gen_data: MlBody) -> Result<reqwest::blocking::Response, &str> {
+        if gen_data.prompt.len() < 1 {
+            panic!("No prompt provided");
+        }
         let json_body = serde_json::to_string(&gen_data).unwrap();
-        self.client.post(OLLAMA_ENDP).body(json_body).send()
+        let res = self.client.post(OLLAMA_ENDP).body(json_body).send();
+        if res.is_err() {
+            panic!("Failed to send ollama payload");
+        }
+        Ok(res.unwrap())
     }
 }
