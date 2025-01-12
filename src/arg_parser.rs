@@ -13,6 +13,7 @@ impl ArgParser {
         let arg = args().nth(1);
         if arg.is_none() {
             // <-- interactive mode will go here
+            println!("...(future) interactive mode not implimented... exiting");
             return None;
         }
         let arg = arg.unwrap();
@@ -20,13 +21,10 @@ impl ArgParser {
             "-c" => Some(ParsedArg::Commit),
             "-p" => Some(ParsedArg::PullRequest),
             "-h" => {
-                println!("help stuff here");
-                None
-            }
-            _ => {
                 println!("Available Commands: -c [commit] -p [pull request] -h [help]");
                 None
             }
+            _ => None,
         }
     }
 }
