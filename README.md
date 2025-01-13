@@ -65,4 +65,23 @@ graph { flow: east; }
 [interactive] { origin: arg parser; offset: 0,-2; } <== no args ==> {start:right; end:left}[arg parser]
 ~~~
 ```
+---
+
+# How to use
+from within a git repo you can do the following
+
+## commit
+*ensure you have staged files*
+```bash
+ferro -c
+# or if you want to blindly accept what it spits out (fire and forget)
+git commit -m $(ferro -c)
+  
+```
+
+## pull request
+*this just generates the contents for you to populate a PR with*
+```bash
+ferro -p
+```
 
