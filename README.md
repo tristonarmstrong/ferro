@@ -25,11 +25,11 @@ figure out how to get those installed on your OS and then come back, otherwise, 
 ---
 
 ## Architecture
-I just wanted to split things up in a cohesive way. Where one node is resposible for its own thing and returns whatever 
+I just wanted to split things up in a cohesive way. Where one node is resposible for its own thing and returns whatever
 data, it creates, to its caller
 
 ```
-this is a graph demonstrating the mvp architecture 
+this is a graph demonstrating the mvp architecture
 
 ~~~graph-easy --as=boxart
 graph { flow: east; }
@@ -39,17 +39,17 @@ graph { flow: east; }
 [pr handler], [commit handler] -> {start:front; end:back,0;} [ml interface]
 [ml interface] -> [out]
 
-[commit handler] <=> [banana]
-[pr handler] <=> [apple]
+[commit handler] -> {end: back,0;} [git grabber]
+[pr handler] -> {end: back,0;} [git grabber]
 ~~~
 ```
 
-*continue to next slide to see mvp v2 architecture* 
+*continue to next slide to see mvp v2 architecture*
 
 ---
 
 ```
-this is a graph demonstrating the mvp (v2) architecture 
+this is a graph demonstrating the mvp (v2) architecture
 
 ~~~graph-easy --as=boxart
 graph { flow: east; }
@@ -59,12 +59,13 @@ graph { flow: east; }
 [pr handler], [commit handler] -> {start:front; end:back,0;} [ml interface]
 [ml interface] -> [out]
 
-[commit handler] <=> [banana]
-[pr handler] <=> [apple]
-[config loader]{ origin: main; offset: 0,-2; } -> {start:right; end:left} [main] 
+[commit handler] -> {end: front,0;} [git grabber]
+[pr handler] -> {end: front,0;} [git grabber]
+[config loader]{ origin: main; offset: 0,-2; } -> {start:right; end:left} [main]
 [interactive] { origin: arg parser; offset: 0,-2; } <== no args ==> {start:right; end:left}[arg parser]
 ~~~
 ```
+
 ---
 
 # How to use
@@ -76,7 +77,7 @@ from within a git repo you can do the following
 ferro -c
 # or if you want to blindly accept what it spits out (fire and forget)
 git commit -m $(ferro -c)
-  
+
 ```
 
 ## pull request
@@ -84,4 +85,3 @@ git commit -m $(ferro -c)
 ```bash
 ferro -p
 ```
-
