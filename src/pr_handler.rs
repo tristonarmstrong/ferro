@@ -1,39 +1,29 @@
-use crate::git_grabber::GitGrabber;
+use crate::{config_reader::ConfigReader, git_grabber::GitGrabber};
 
 pub struct PrHandler {}
 impl PrHandler {
-    pub fn new() -> Option<(String, String)> {
-        let directions = String::from("
+    pub fn new(config: Option<ConfigReader>) -> Option<(String, String)> {
+        let config = config.unwrap();
+        let types = config
+            .pull_request
+            .change_type
+            .into_iter()
+            .fold(String::new(), |acc, x| format!("{acc}, {x}"));
+        let instructions = config.pull_request.instructions;
+        let constraints = config.pull_request.constraints;
+        let directions = String::from(format!("
             <Variables>
-            change_type: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+            change_type: {types}
 
             <PR Title>
             create a short PR title from this diff, with format <change_type>(<scope>): <pr_description>. 
 
             <PR Description>
-            create a PR Description to describe the changes made in this diff using the commit messages for the body content.
-
-            follow this format:
-            ## What?
-            [what_description]
-            #[ticket_number]
-            ## Why?
-            [why_description]
-            ## How?
-            [how_description]
-            ## Testing?
-            [testing_description]
-            ## Screenshots (optional)
-            [screenshots]
-            ## Anything Else?
-            [leftover_details]
-
-            include signature at the end stating 'this is an ai generated pull request description'.
+            {instructions}
 
             <Response Constraints>
-            Only respond with the Pr title and Pr description. 
-            Use Emojis in description body only.
-        ");
+            {constraints}
+        "));
         Some((directions, GitGrabber::generate_repo_desc()))
     }
 }

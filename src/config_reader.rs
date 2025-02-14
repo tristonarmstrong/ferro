@@ -1,62 +1,75 @@
-use core::panic;
 use std::{env, fs::File, io::Read};
 
-#[derive(Debug)]
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
 pub struct CommitConfig {
-    change_type: Vec<String>,
-    instructions: String,
-    constraints: String,
+    pub change_type: Vec<String>,
+    pub instructions: String,
+    pub constraints: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct PrConfig {
-    change_type: Vec<String>,
-    instructions: String,
-    constraints: String,
+    pub change_type: Vec<String>,
+    pub instructions: String,
+    pub constraints: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct ConfigReader {
-    commit: CommitConfig,
-    pull_request: PrConfig,
+    pub commit: CommitConfig,
+    pub pull_request: PrConfig,
 }
 
 impl ConfigReader {
     pub fn new() -> Option<Self> {
-        let home = Self::get_home().unwrap();
-        let config_path = format!("{}/.config/ferro/config.json", home);
+        let home = Self::get_home();
+        if home.is_none() {
+            panic!("Failed to get home directory");
+        }
+
+        let config_path = format!("{}/.config/ferro/config.json", home.unwrap());
+
         let file = Self::read_file(config_path);
-        Some(Self {
-            commit: Self::create_commit(),
-            pull_request: Self::create_pr(),
-        })
+        if file.is_none() {
+            panic!("Failed to read file")
+        }
+
+        let json_version = Self::parse_json(file.unwrap());
+        Some(json_version)
     }
 
-    fn parse_json() -> String {
-        todo!()
+    fn parse_json(file: String) -> ConfigReader {
+        let res = serde_json::from_str::<ConfigReader>(file.as_str());
+        if res.is_err() {
+            panic!("Failed to parse JSON from file: {}", res.unwrap_err());
+        }
+
+        res.unwrap()
     }
 
-    fn create_commit() -> CommitConfig {
-        todo!()
-    }
+    // fn create_commit() -> CommitConfig {
+    //     todo!()
+    // }
 
-    fn create_pr() -> PrConfig {
-        todo!()
-    }
+    // fn create_pr() -> PrConfig {
+    //     todo!()
+    // }
 
     fn get_home() -> Option<String> {
-        let home = env::home_dir();
+        let home = env::home_dir(); //TODO: change to support windows
         if home.is_none() {
-            panic!("No Home dir to read config from");
+            return None;
         }
         let home = home.unwrap();
         Some(home.display().to_string())
     }
 
+    // TODO: probably need return result
     fn read_file(config_path: String) -> Option<String> {
         let file = File::open(config_path);
         if file.is_err() {
-            println!("[ ERROR ]: {}", file.unwrap_err());
             return None;
         }
 

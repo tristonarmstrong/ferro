@@ -1,18 +1,21 @@
 mod arg_parser;
 mod commit_handler;
+mod config_reader;
 mod git_grabber;
 mod ml_interface;
 mod pr_handler;
 
 use arg_parser::ArgParser;
 use commit_handler::CommitHandler;
+use config_reader::ConfigReader;
 use ml_interface::{MlBody, MlInterface, MlResponse};
 use pr_handler::PrHandler;
 
 fn main() {
+    let config = ConfigReader::new();
     let prompt: Option<(String, String)> = match ArgParser::parse() {
-        Some(arg_parser::ParsedArg::Commit) => CommitHandler::new(),
-        Some(arg_parser::ParsedArg::PullRequest) => PrHandler::new(),
+        Some(arg_parser::ParsedArg::Commit) => CommitHandler::new(config),
+        Some(arg_parser::ParsedArg::PullRequest) => PrHandler::new(config),
         None => None,
     };
 
