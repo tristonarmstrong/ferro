@@ -12,7 +12,7 @@ impl ArgParser {
     pub fn parse() -> Option<ParsedArg> {
         let arg = args().nth(1);
         if arg.is_none() {
-            // <-- interactive mode will go here
+            // TODO: <-- interactive mode will go here
             println!("...(future) interactive mode not implimented... exiting");
             return None;
         }
