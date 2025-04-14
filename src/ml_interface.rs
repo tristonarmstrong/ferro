@@ -1,9 +1,9 @@
+use core::panic;
 
 use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 
-#[allow(unused)]
-pub static OLLAMA_ENDP: &str = "http://localhost:11434/api/generate";
+use crate::config_reader::ConfigReader;
 
 #[derive(Debug, Deserialize)]
 #[allow(unused)]
@@ -40,10 +40,15 @@ pub struct MlBody {
 }
 
 impl MlBody {
-    #[allow(unused)]
     pub fn new(content: String, directions: String) -> Self {
+        let config = ConfigReader::new();
+        if config.is_none() {
+            panic!("Failed to get ollama endpoint because config file couldnt be read");
+        }
+        let config = config.unwrap();
+
         Self {
-            model: String::from("llama3.1"),
+            model: config.model,
             stream: false,
             raw: false,
             prompt: content,
@@ -73,13 +78,27 @@ impl MlInterface {
         }
     }
 
+    pub fn get_ollama_endpoint(&self) -> String {
+        let config = ConfigReader::new();
+        if config.is_none() {
+            panic!("Failed to get ollama endpoint because config file couldnt be read");
+        }
+        let config = config.unwrap();
+        let ollama_endp = format!("http://{}:{}/api/generate", config.address, config.port);
+        ollama_endp
+    }
+
     #[allow(unused)]
     pub fn make_request(&mut self, gen_data: MlBody) -> Result<reqwest::blocking::Response, &str> {
         if gen_data.prompt.len() < 1 {
             panic!("No prompt provided");
         }
         let json_body = serde_json::to_string(&gen_data).unwrap();
-        let res = self.client.post(OLLAMA_ENDP).body(json_body).send();
+        let res = self
+            .client
+            .post(self.get_ollama_endpoint())
+            .body(json_body)
+            .send();
         if res.is_err() {
             panic!("Failed to send ollama payload");
         }
