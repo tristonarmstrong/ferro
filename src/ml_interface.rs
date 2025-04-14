@@ -27,6 +27,7 @@ struct MlOptions {
     repeat_last_n: u8,
     top_k: u8,
     top_p: f32,
+    num_ctx: u8,
 }
 
 #[derive(Debug, Serialize)]
@@ -59,6 +60,7 @@ impl MlBody {
                 repeat_last_n: 0,
                 top_k: 10,
                 top_p: 0.5,
+                num_ctx: 0,
             },
         }
     }
