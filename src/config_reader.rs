@@ -1,4 +1,9 @@
-use std::{env, fs::File, io::Read};
+use core::panic;
+use std::{
+    env,
+    fs::{self, File},
+    io::Read,
+};
 
 use serde::Deserialize;
 
@@ -18,6 +23,9 @@ pub struct PrConfig {
 
 #[derive(Debug, Deserialize)]
 pub struct ConfigReader {
+    pub model: String,
+    pub address: String,
+    pub port: String,
     pub commit: CommitConfig,
     pub pull_request: PrConfig,
 }
@@ -29,13 +37,30 @@ impl ConfigReader {
             panic!("Failed to get home directory");
         }
 
-        let config_path = format!("{}/.config/ferro/config.json", home.unwrap());
+        let config_path = format!("{}/.config/ferro/config.json", home.clone().unwrap());
 
-        let file = Self::read_file(config_path);
-        if file.is_none() {
-            panic!("Failed to read file")
+        let exists = fs::exists(config_path.clone()).unwrap();
+
+        if !exists {
+            let dir_exists =
+                fs::exists(format!("{}/.config/ferro", home.clone().unwrap())).unwrap();
+            if !dir_exists {
+                let create_dir_res = fs::create_dir(format!("{}/.config/ferro", home.unwrap()));
+                if create_dir_res.is_err() {
+                    panic!("Failed to create ferro directory");
+                }
+            }
+            let res = fs::copy("./resources/config.json", config_path.clone());
+            if res.is_err() {
+                panic!(
+                    "{}: {}",
+                    "Failed to create default config file",
+                    res.err().unwrap()
+                );
+            }
         }
 
+        let file = Self::read_file(config_path);
         let json_version = Self::parse_json(file.unwrap());
         Some(json_version)
     }
