@@ -42,27 +42,30 @@ impl ConfigReader {
         let exists = fs::exists(config_path.clone()).unwrap();
 
         if !exists {
-            let dir_exists =
-                fs::exists(format!("{}/.config/ferro", home.clone().unwrap())).unwrap();
-            if !dir_exists {
-                let create_dir_res = fs::create_dir(format!("{}/.config/ferro", home.unwrap()));
-                if create_dir_res.is_err() {
-                    panic!("Failed to create ferro directory");
-                }
-            }
-            let res = fs::copy("./resources/config.json", config_path.clone());
-            if res.is_err() {
-                panic!(
-                    "{}: {}",
-                    "Failed to create default config file",
-                    res.err().unwrap()
-                );
-            }
+            Self::generate_config_file(home, config_path.clone());
         }
 
         let file = Self::read_file(config_path);
         let json_version = Self::parse_json(file.unwrap());
         Some(json_version)
+    }
+
+    fn generate_config_file(home: Option<String>, config_path: String) -> () {
+        let dir_exists = fs::exists(format!("{}/.config/ferro", home.clone().unwrap())).unwrap();
+        if !dir_exists {
+            let create_dir_res = fs::create_dir(format!("{}/.config/ferro", home.unwrap()));
+            if create_dir_res.is_err() {
+                panic!("Failed to create ferro directory");
+            }
+        }
+        let res = fs::copy("./resources/config.json", config_path);
+        if res.is_err() {
+            panic!(
+                "{}: {}",
+                "Failed to create default config file",
+                res.err().unwrap()
+            );
+        }
     }
 
     fn parse_json(file: String) -> ConfigReader {
