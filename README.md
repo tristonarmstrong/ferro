@@ -1,4 +1,5 @@
-# Ferro
+<img src="./public/logo.png" width='200' height='200'/>
+
 A rust base llm wrapper for generating git commits and descriptions
 
 ## How to read
