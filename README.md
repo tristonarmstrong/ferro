@@ -1,6 +1,14 @@
-<img src="./public/logo.png" width='200' height='200'/>
+<p align='center'>
+  <img src="./public/logo.png" width='260'/>
+</p>
 
-A rust base llm wrapper for generating git commits and descriptions
+<h1 align="center">Ferro.rs</h1>
+<div align="center">
+  A rust base llm wrapper for generating git commits and descriptions
+</div>
+
+<br>
+<br>
 
 ## How to read
 This readme can be read _As-Is_ but youll be missing some nice visuals. If you want to see those, you need two tools:
